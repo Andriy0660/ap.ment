@@ -21,7 +21,7 @@ public class AuthenticationController {
             @RequestBody @Valid RegisterRequest request
     ){
         authService.signUp(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/signin")
@@ -32,7 +32,7 @@ public class AuthenticationController {
     }
 
     @GetMapping ("/loginbygoogle")
-    public ResponseEntity<?> loginByGoogle(@RequestParam("code") String accessToken) {
+    public ResponseEntity<AuthenticationResponse> loginByGoogle(@RequestParam("code") String accessToken) {
         return authService.loginByGoogle(accessToken);
     }
 

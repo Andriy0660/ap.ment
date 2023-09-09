@@ -7,10 +7,7 @@ import com.example.ap_ment.entity.User;
 import com.example.ap_ment.entity.UserDetailsImpl;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.UnauthorizedException;
-import org.junit.Before;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +21,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,14 +55,14 @@ class AuthenticationServiceTest {
 
     @Test
     void shouldThrowWhenEmailExists(){
-        when(userService.existsUserByEmail(rr.getEmail())).thenReturn(true);
+        when(userService.existsByEmail(rr.getEmail())).thenReturn(true);
         assertThatThrownBy(()->authenticationService.signUp(rr))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("The email is already used");
+                .hasMessage("The email is already used");
     }
     @Test
     void shouldInvokeMethodSave(){
-        when(userService.existsUserByEmail(rr.getEmail())).thenReturn(false);
+        when(userService.existsByEmail(rr.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(rr.getPassword())).thenReturn("password");
 
         authenticationService.signUp(rr);
@@ -83,12 +79,12 @@ class AuthenticationServiceTest {
         User googleUser = new User();
         googleUser.setSignUpByGoogle(true);
 
-        when(userService.existsUserByEmail(ar.getEmail())).thenReturn(true);
-        when(userService.findUserByEmail(ar.getEmail())).thenReturn(googleUser);
+        when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
+        when(userService.findByEmail(ar.getEmail())).thenReturn(googleUser);
 
         assertThatThrownBy(()->authenticationService.signIn(ar))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessageContaining("You signed up using Google. " +
+                .hasMessage("You signed up using Google. " +
                         "Please sign in using google");
     }
     @Test
@@ -96,20 +92,20 @@ class AuthenticationServiceTest {
         User user = new User();
         user.setSignUpByGoogle(false);
 
-        when(userService.existsUserByEmail(ar.getEmail())).thenReturn(true);
-        when(userService.findUserByEmail(ar.getEmail())).thenReturn(user);
+        when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
+        when(userService.findByEmail(ar.getEmail())).thenReturn(user);
         when(authenticationManager.authenticate(Mockito.any())).thenThrow(BadCredentialsException.class);
 
         assertThatThrownBy(()->authenticationService.signIn(ar))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("Password is wrong");
+                .hasMessage("Password is wrong");
     }
     @Test
     void shouldThrowWhenUserDoesntExist(){
-        when(userService.existsUserByEmail(rr.getEmail())).thenReturn(false);
+        when(userService.existsByEmail(rr.getEmail())).thenReturn(false);
         assertThatThrownBy(()->authenticationService.signIn(ar))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("There is no user with this email. Please sign up");
+                .hasMessage("There is no user with this email. Please sign up");
 
     }
     @Test
@@ -123,8 +119,8 @@ class AuthenticationServiceTest {
                 .build();
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
 
-        when(userService.existsUserByEmail(ar.getEmail())).thenReturn(true);
-        when(userService.findUserByEmail(ar.getEmail())).thenReturn(user);
+        when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
+        when(userService.findByEmail(ar.getEmail())).thenReturn(user);
         when(userDetailService.loadUserByUsername(ar.getEmail())).thenReturn(userDetails);
 
         assertThat(authenticationService.signIn(ar)).isInstanceOf(AuthenticationResponse.class);

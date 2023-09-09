@@ -37,7 +37,7 @@ public class AuthenticationService {
     {
         String email = request.getEmail();
 
-        if(userService.existsUserByEmail(email)){
+        if(userService.existsByEmail(email)){
             throw new BadRequestException("The email is already used");
         }
 
@@ -46,6 +46,7 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
+                .friendRequestCode(RandomStringUtils.randomAscii(5))
                 .build();
         if(request.getRole()!=null){user.setRole("MANAGER");}
         else{user.setRole("USER");}
@@ -53,8 +54,8 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse signIn(AuthenticationRequest request) {
-        if(userService.existsUserByEmail(request.getEmail())){
-            User user = userService.findUserByEmail(request.getEmail());
+        if(userService.existsByEmail(request.getEmail())){
+            User user = userService.findByEmail(request.getEmail());
             if(user.isSignUpByGoogle())throw new BadRequestException("You signed up using Google. " +
                     "Please sign in using google");
         }
@@ -100,7 +101,7 @@ public class AuthenticationService {
                 String lastName = jsonObject.getString("family_name");
                 String email = jsonObject.getString("email");
 
-                if(userService.existsUserByEmail(email)){                 //authenticate user
+                if(userService.existsByEmail(email)){                 //authenticate user
 
                     UserDetailsImpl userDetails = (UserDetailsImpl) userDetailService.loadUserByUsername(email);
                     User user = userDetails.getUser();

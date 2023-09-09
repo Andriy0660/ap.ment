@@ -28,7 +28,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request.requestMatchers(
                                 "/apment/v1/auth/signup", "/apment/v1/auth/signin"
                                 ,"/apment/v1/auth/loginbygoogle"
-                        ).permitAll().requestMatchers("/apment/v1/auth/biginfo").hasRole("MANAGER")
+                        ).permitAll()
+                        //.requestMatchers("/apment/v1/auth/biginfo").hasRole("MANAGER")
                         .anyRequest().authenticated())
                 .sessionManagement(configurer ->
                         configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

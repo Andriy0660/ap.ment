@@ -1,5 +1,6 @@
 package com.example.ap_ment.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,6 +22,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<?> handleBadRequestException(BadRequestException ex) {
         return ExceptionBuilder.buildExceptionResponse(ex, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<?> handleConflictException(ConflictException ex) {
+        return ExceptionBuilder.buildExceptionResponse(ex, HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> handleNotFoundException(NotFoundException ex) {
+        return ExceptionBuilder.buildExceptionResponse(ex, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(ServerErrorException.class)
     public ResponseEntity<?> handleServerErrorException(ServerErrorException ex) {
@@ -38,6 +45,10 @@ public class GlobalExceptionHandler {
         }
         return ExceptionBuilder.buildExceptionResponse(
                 new BadRequestException(errorMessages.toString()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?>handleConstraintException(ConstraintViolationException ex){
+        return ExceptionBuilder.buildExceptionResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

@@ -47,6 +47,6 @@ class UserDetailServiceImplTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         assertThatThrownBy(()->userDetailService.loadUserByUsername(email))
                 .isInstanceOf(UsernameNotFoundException.class)
-                .hasMessageContaining("User not found");
+                .hasMessage("User not found");
     }
 }
