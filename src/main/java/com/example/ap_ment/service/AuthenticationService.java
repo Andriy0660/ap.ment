@@ -17,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -63,11 +65,13 @@ public class AuthenticationService {
             throw new UnauthorizedException("There is no user with this email. Please sign up");
         }
         try {
-            authenticationManager.authenticate(
+            Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(), request.getPassword()
                     )
             );
+            //without jwt
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (BadCredentialsException | InternalAuthenticationServiceException e) {
             throw new UnauthorizedException("Password is wrong");
         }
