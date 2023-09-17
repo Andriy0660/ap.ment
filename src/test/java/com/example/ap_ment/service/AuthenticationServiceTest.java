@@ -27,15 +27,15 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
     @Mock
-    JwtService jwtService;
+    private JwtService jwtService;
     @Mock
-    UserDetailServiceImpl userDetailService;
+    private UserDetailServiceImpl userDetailService;
     @Mock
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private UserService userService;
+    private UserServiceImpl userService;
     @InjectMocks
     private AuthenticationService authenticationService;
     private static RegisterRequest rr;

@@ -7,6 +7,7 @@ import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.ConflictException;
 import com.example.ap_ment.exception.NotFoundException;
 import com.example.ap_ment.mapper.FriendRequestMapper;
+import com.example.ap_ment.mapper.Mapper;
 import com.example.ap_ment.mapper.UserMapper;
 import com.example.ap_ment.repository.FriendRequestRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,21 +30,20 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class FriendServiceTest {
+class FriendServiceImplTest {
     @Mock
-    FriendRequestRepository friendRequestRepository;
+    private FriendRequestRepository friendRequestRepository;
     @Spy
     @InjectMocks
-    FriendService friendService;
+    private FriendServiceImpl friendService;
     @Mock
-    UserService userService;
+    private UserServiceImpl userService;
     @Mock
-    FriendRequestMapper friendRequestMapper;
-    @Mock
-    UserMapper userMapper;
-    FriendRequest friendRequest;
-    User receiver;
-    User sender;
+    private Mapper mapper;
+
+    private FriendRequest friendRequest;
+    private User receiver;
+    private User sender;
     @BeforeEach
     void setUp() {
         receiver = User.builder()
@@ -74,13 +74,13 @@ class FriendServiceTest {
     }
     @Test
     void save() {
-        friendRequestRepository.save(friendRequest);
+        friendService.save(friendRequest);
         verify(friendRequestRepository).save(friendRequest);
     }
 
     @Test
     void delete() {
-        friendRequestRepository.delete(friendRequest);
+        friendService.delete(friendRequest);
         verify(friendRequestRepository).delete(friendRequest);
     }
     @Test
@@ -146,7 +146,7 @@ class FriendServiceTest {
 
     @Test
     void shouldAddFriendAndSaveInDBForTwoUsers() {
-        friendService.confirmFriendRequest(receiver,sender);
+        friendService.confirmFriendRequest(sender,receiver);
         assertThat(sender.getFriends().contains(receiver)).isTrue();
         assertThat(receiver.getFriends().contains(sender)).isTrue();
         verify(userService).save(sender);
@@ -160,10 +160,9 @@ class FriendServiceTest {
         Set<UserDTO> expected = new HashSet<>();
         expected.add(new UserDTO(sender.getEmail(), sender.getFirstName(), sender.getLastName()));
 
-        when(friendRequestMapper.setToDTOs(Mockito.anySet())).thenReturn(expected);
+        when(mapper.map(Mockito.anySet(), eq(Set.class))).thenReturn(expected);
 
-        assertThat(friendService.getAllFriendRequestDTOsForUser(receiver)).isEqualTo(expected);
-        verify(friendRequestMapper).setToDTOs(Mockito.any());
+        assertThat(friendService.getAllFriendRequestsForUser(receiver)).isEqualTo(expected);
     }
     @Test
     void shouldReturnAllFriendsForUserTransformedIntoUserDTO() {
@@ -172,10 +171,9 @@ class FriendServiceTest {
         Set<UserDTO> expected = new HashSet<>();
         expected.add(new UserDTO(sender.getEmail(), sender.getFirstName(), sender.getLastName()));
 
-        when(userMapper.setToDTOs(Mockito.anySet())).thenReturn(expected);
+        when(mapper.map(Mockito.anySet(), eq(Set.class))).thenReturn(expected);
 
-        assertThat(friendService.getAllFriendDTOsForUser(receiver)).isEqualTo(expected);
-        verify(userMapper).setToDTOs(Mockito.any());
+        assertThat(friendService.getAllFriendsForUser(receiver)).isEqualTo(expected);
     }
 
     @Test

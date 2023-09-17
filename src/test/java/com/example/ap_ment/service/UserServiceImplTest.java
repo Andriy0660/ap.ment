@@ -4,6 +4,8 @@ import com.example.ap_ment.dto.response.UserDTO;
 import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.NotFoundException;
+import com.example.ap_ment.mapper.FriendRequestMapper;
+import com.example.ap_ment.mapper.Mapper;
 import com.example.ap_ment.mapper.UserMapper;
 import com.example.ap_ment.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -17,18 +19,20 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @DataJpaTest
-class UserServiceTest {
+class UserServiceImplTest {
     @Autowired
     private UserRepository userRepository;
-    private UserService userService;
-    private UserMapper userMapper= new UserMapper();
+    private UserServiceImpl userService;
+
+    private Mapper mapper = new Mapper(new UserMapper(), new FriendRequestMapper(new UserMapper()));
     private static User user;
 
     @BeforeEach
-    void setUp() {userService = new UserService(userRepository,userMapper);}
+    void setUp() {userService = new UserServiceImpl(userRepository,mapper);}
     @BeforeAll
     static void buildUser(){
         user = User.builder()
@@ -109,5 +113,4 @@ class UserServiceTest {
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("You can not add yourself to your friends");
     }
-
 }

@@ -31,10 +31,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(authService.signIn(request));
     }
 
-    @GetMapping ("/loginbygoogle")
-    public ResponseEntity<AuthenticationResponse> loginByGoogle(@RequestParam("code") String accessToken) {
-        return authService.loginByGoogle(accessToken);
-    }
+//    @GetMapping ("/loginbygoogle")
+//    public ResponseEntity<AuthenticationResponse> loginByGoogle(@RequestParam("code") String accessToken) {
+//        return authService.loginByGoogle(accessToken);
+//    }
 
 
 //    @GetMapping("/info")

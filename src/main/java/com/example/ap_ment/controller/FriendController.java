@@ -58,7 +58,7 @@ public class FriendController {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
         User user = userDetails.getUser();
-        return ResponseEntity.ok(friendService.getAllFriendRequestDTOsForUser(user));
+        return ResponseEntity.ok(friendService.getAllFriendRequestsForUser(user));
     }
 
     @GetMapping
@@ -66,7 +66,7 @@ public class FriendController {
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
         User user = userDetails.getUser();
-        return ResponseEntity.ok(friendService.getAllFriendDTOsForUser(user));
+        return ResponseEntity.ok(friendService.getAllFriendsForUser(user));
     }
 
 }
