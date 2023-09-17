@@ -25,18 +25,15 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthenticationResponse> signIn(
+    public ResponseEntity<Void> signIn(
             @RequestBody @Valid AuthenticationRequest request
     ){
-        return ResponseEntity.ok(authService.signIn(request));
+        authService.signIn(request);
+        return ResponseEntity.noContent().build();
     }
 
 //    @GetMapping ("/loginbygoogle")
 //    public ResponseEntity<AuthenticationResponse> loginByGoogle(@RequestParam("code") String accessToken) {
 //        return authService.loginByGoogle(accessToken);
 //    }
-
-
-
-
 }

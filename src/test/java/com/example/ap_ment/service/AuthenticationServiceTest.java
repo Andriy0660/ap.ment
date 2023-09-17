@@ -16,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -87,14 +88,20 @@ class AuthenticationServiceTest {
     }
     @Test
     void shouldThrowWhenPasswordIsWrong(){
-        User user = new User();
+        User user = User.builder()
+                .firstName("Andrii")
+                .lastName("Snovyda")
+                .email("sandriy@gmail.com")
+                .password("1234567")
+                .friendRequestCode("HALLO")
+                .build();
         user.setSignUpByGoogle(false);
 
         when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
         when(userService.findByEmail(ar.getEmail())).thenReturn(user);
-        //when(authenticationManager.authenticate(Mockito.any())).thenThrow(BadCredentialsException.class);
+        when(authenticationManager.authenticate(Mockito.any())).thenThrow(BadCredentialsException.class);
 
-        assertThatThrownBy(()->authenticationService.signIn(ar))
+        assertThatThrownBy(()-> authenticationService.signIn(ar))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessage("Password is wrong");
     }
@@ -119,8 +126,8 @@ class AuthenticationServiceTest {
 
         when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
         when(userService.findByEmail(ar.getEmail())).thenReturn(user);
-        when(passwordEncoder.matches("password","password")).thenReturn(true);
-        assertThat(authenticationService.signIn(ar)).isInstanceOf(AuthenticationResponse.class);
-        verify(jwtService).generateToken(user);
+        authenticationService.signIn(ar);
+        verify(authenticationManager).authenticate(new UsernamePasswordAuthenticationToken(
+                "sandriy@gmail.com","password"));
     }
 }

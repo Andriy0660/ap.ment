@@ -2,14 +2,17 @@ package com.example.ap_ment.service;
 
 import com.example.ap_ment.dto.request.AuthenticationRequest;
 import com.example.ap_ment.dto.request.RegisterRequest;
-import com.example.ap_ment.dto.response.AuthenticationResponse;
 import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,8 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserServiceImpl userService;
+    private final AuthenticationManager authenticationManager;
+
 
     public void signUp(RegisterRequest request)
     {
@@ -42,7 +47,7 @@ public class AuthenticationService {
         userService.save(user);
     }
 
-    public AuthenticationResponse signIn(AuthenticationRequest request) {
+    public void signIn(AuthenticationRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
         if(userService.existsByEmail(email)){
@@ -54,13 +59,11 @@ public class AuthenticationService {
             throw new UnauthorizedException("There is no user with this email. Please sign up");
         }
         try {
-            User user = userService.findByEmail(email);
 
-            if (passwordEncoder.matches(password, user.getPassword())) {
-                String jwtToken = jwtService.generateToken(user);
-                return AuthenticationResponse.builder().token(jwtToken).build();
-            } else
-                throw new BadCredentialsException("Invalid password!");
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (BadCredentialsException | InternalAuthenticationServiceException e) {
             throw new UnauthorizedException("Password is wrong");
