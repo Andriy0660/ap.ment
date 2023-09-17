@@ -92,7 +92,7 @@ class AuthenticationServiceTest {
 
         when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
         when(userService.findByEmail(ar.getEmail())).thenReturn(user);
-        when(authenticationManager.authenticate(Mockito.any())).thenThrow(BadCredentialsException.class);
+        //when(authenticationManager.authenticate(Mockito.any())).thenThrow(BadCredentialsException.class);
 
         assertThatThrownBy(()->authenticationService.signIn(ar))
                 .isInstanceOf(UnauthorizedException.class)
@@ -119,6 +119,7 @@ class AuthenticationServiceTest {
 
         when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
         when(userService.findByEmail(ar.getEmail())).thenReturn(user);
+        when(passwordEncoder.matches("password","password")).thenReturn(true);
         assertThat(authenticationService.signIn(ar)).isInstanceOf(AuthenticationResponse.class);
         verify(jwtService).generateToken(user);
     }
