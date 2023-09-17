@@ -2,7 +2,6 @@ package com.example.ap_ment.controller;
 
 import com.example.ap_ment.dto.response.UserDTO;
 import com.example.ap_ment.entity.User;
-import com.example.ap_ment.entity.UserDetailsImpl;
 import com.example.ap_ment.exception.NotFoundException;
 import com.example.ap_ment.service.FriendService;
 import com.example.ap_ment.service.UserService;
@@ -24,9 +23,8 @@ public class FriendController {
 
     @GetMapping("/search")
     public ResponseEntity<?>searchByCode(@RequestParam("code")String code){
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
+        User user = (User) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
         try {
             return ResponseEntity.ok(userService.findByFriendRequestCode(code, user.getId()));
         } catch(NotFoundException e){
@@ -36,9 +34,8 @@ public class FriendController {
 
     @PostMapping
     public ResponseEntity<Void>makeRequest(@RequestParam("id")Integer friendId){
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
+        User user = (User) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
         return friendService.makeFriendRequest(friendId,user);
     }
 
@@ -47,25 +44,22 @@ public class FriendController {
         message = "'status' must be 'confirm' or 'reject'")String status,
                                             @RequestParam("id")Integer friendRequestId){
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
+        User receiver = (User) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
-        User receiver = userDetails.getUser();
         return friendService.performFriendRequest(status,friendRequestId,receiver);
     }
 
     @GetMapping("/requests")
     public ResponseEntity<Set<UserDTO>> getAllFriendRequestsForUser(){
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
+        User user = (User) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
         return ResponseEntity.ok(friendService.getAllFriendRequestsForUser(user));
     }
 
     @GetMapping
     public ResponseEntity<Set<UserDTO>> getAllFriendsForUser(){
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().
+        User user = (User) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
         return ResponseEntity.ok(friendService.getAllFriendsForUser(user));
     }
 

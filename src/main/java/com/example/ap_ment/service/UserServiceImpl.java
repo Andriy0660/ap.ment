@@ -5,13 +5,11 @@ import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.NotFoundException;
 import com.example.ap_ment.mapper.Mapper;
-import com.example.ap_ment.mapper.UserMapper;
 import com.example.ap_ment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

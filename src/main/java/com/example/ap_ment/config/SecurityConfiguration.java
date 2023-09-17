@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -34,7 +33,7 @@ public class SecurityConfiguration {
                                 "/apment/v1/auth/signup", "/apment/v1/auth/signin"
                                 ,"/apment/v1/auth/loginbygoogle"
                         ).permitAll()
-                        //.requestMatchers("/apment/v1/auth/biginfo").hasRole("MANAGER")
+                        .requestMatchers("/apment/v1/user").hasRole("MANAGER")    //for roles
                         .anyRequest().authenticated())
                 .sessionManagement(configurer ->
                         configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

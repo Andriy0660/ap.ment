@@ -4,7 +4,6 @@ import com.example.ap_ment.dto.request.AuthenticationRequest;
 import com.example.ap_ment.dto.request.RegisterRequest;
 import com.example.ap_ment.dto.response.AuthenticationResponse;
 import com.example.ap_ment.entity.User;
-import com.example.ap_ment.entity.UserDetailsImpl;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserDetailServiceImpl userDetailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -64,12 +61,12 @@ public class AuthenticationService {
                     )
             );
             //without jwt
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            //SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (BadCredentialsException | InternalAuthenticationServiceException e) {
             throw new UnauthorizedException("Password is wrong");
         }
 
-        UserDetailsImpl user = (UserDetailsImpl) userDetailService.loadUserByUsername(request.getEmail());
+        User user = userService.findByEmail(request.getEmail());
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
     }

@@ -6,7 +6,6 @@ import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.ConflictException;
 import com.example.ap_ment.exception.NotFoundException;
-import com.example.ap_ment.mapper.FriendRequestMapper;
 import com.example.ap_ment.mapper.Mapper;
 import com.example.ap_ment.repository.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;

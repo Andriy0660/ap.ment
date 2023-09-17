@@ -37,14 +37,6 @@ public class AuthenticationController {
 //    }
 
 
-//    @GetMapping("/info")
-//    public String getInfo(){
-//        return "info";
-//    }
-//    @PreAuthorize("hasRole('MANAGER')")
-//    @GetMapping("/biginfo")
-//    public String getBigInfo(){
-//        return "biginfo";
-//    }
+
 
 }

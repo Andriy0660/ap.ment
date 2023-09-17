@@ -4,7 +4,6 @@ import com.example.ap_ment.dto.request.AuthenticationRequest;
 import com.example.ap_ment.dto.request.RegisterRequest;
 import com.example.ap_ment.dto.response.AuthenticationResponse;
 import com.example.ap_ment.entity.User;
-import com.example.ap_ment.entity.UserDetailsImpl;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.UnauthorizedException;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,8 +27,7 @@ import static org.mockito.Mockito.when;
 class AuthenticationServiceTest {
     @Mock
     private JwtService jwtService;
-    @Mock
-    private UserDetailServiceImpl userDetailService;
+
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
@@ -117,13 +115,11 @@ class AuthenticationServiceTest {
                 .password("password")
                 .isSignUpByGoogle(false)
                 .build();
-        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+
 
         when(userService.existsByEmail(ar.getEmail())).thenReturn(true);
         when(userService.findByEmail(ar.getEmail())).thenReturn(user);
-        when(userDetailService.loadUserByUsername(ar.getEmail())).thenReturn(userDetails);
-
         assertThat(authenticationService.signIn(ar)).isInstanceOf(AuthenticationResponse.class);
-        verify(jwtService).generateToken(userDetails);
+        verify(jwtService).generateToken(user);
     }
 }
