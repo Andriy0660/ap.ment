@@ -2,6 +2,7 @@ package com.example.ap_ment.service;
 
 import com.example.ap_ment.dto.request.AuthenticationRequest;
 import com.example.ap_ment.dto.request.RegisterRequest;
+import com.example.ap_ment.dto.response.AuthenticationResponse;
 import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.UnauthorizedException;
@@ -12,10 +13,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 
 @Service
@@ -23,9 +22,8 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final UserServiceImpl userService;
     private final AuthenticationManager authenticationManager;
-
+    private final UserServiceImpl userService;
 
     public void signUp(RegisterRequest request)
     {
@@ -47,11 +45,9 @@ public class AuthenticationService {
         userService.save(user);
     }
 
-    public void signIn(AuthenticationRequest request) {
-        String email = request.getEmail();
-        String password = request.getPassword();
-        if(userService.existsByEmail(email)){
-            User user = userService.findByEmail(email);
+    public AuthenticationResponse signIn(AuthenticationRequest request) {
+        if(userService.existsByEmail(request.getEmail())){
+            User user = userService.findByEmail(request.getEmail());
             if(user.isSignUpByGoogle())throw new BadRequestException("You signed up using Google. " +
                     "Please sign in using google");
         }
@@ -59,16 +55,20 @@ public class AuthenticationService {
             throw new UnauthorizedException("There is no user with this email. Please sign up");
         }
         try {
-
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(), request.getPassword()
+                    )
             );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
+            //without jwt
+            //SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (BadCredentialsException | InternalAuthenticationServiceException e) {
             throw new UnauthorizedException("Password is wrong");
         }
 
+        User user = userService.findByEmail(request.getEmail());
+        String jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder().token(jwtToken).build();
     }
 
 //    public ResponseEntity<AuthenticationResponse> loginByGoogle(String accessToken)

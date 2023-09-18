@@ -30,7 +30,7 @@ public class CustomProvider implements AuthenticationProvider {
         if (passwordEncoder.matches(password, user.getPassword())) {
             Set<GrantedAuthority> authorities = new HashSet<>();
             authorities.add(new SimpleGrantedAuthority("ROLE_"+user.getRole()));
-            return new UsernamePasswordAuthenticationToken(user, null, authorities);
+            return new UsernamePasswordAuthenticationToken(username, password, authorities);
         } else {
             throw new BadCredentialsException("Invalid password!");
         }

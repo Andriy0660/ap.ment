@@ -1,5 +1,6 @@
 package com.example.ap_ment.config;
 
+import com.example.ap_ment.filter.JWTAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,12 +10,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfiguration {
+    private final JWTAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
@@ -22,8 +25,8 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable);
 
         //without jwt
-        http.securityContext((context) -> context.requireExplicitSave(false))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+//        http.securityContext((context) -> context.requireExplicitSave(false))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
 
         http
                 .authorizeHttpRequests(request -> request.requestMatchers(
@@ -31,8 +34,9 @@ public class SecurityConfiguration {
                                 ,"/apment/v1/auth/loginbygoogle"
                         ).permitAll()
                         .requestMatchers("/apment/v1/user").hasRole("MANAGER")    //for roles
-                        .anyRequest().authenticated());
-
+                        .anyRequest().authenticated())
+                .sessionManagement(configurer ->
+                        configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 
 
@@ -43,7 +47,8 @@ public class SecurityConfiguration {
                 .logoutSuccessHandler(((request, response, authentication) ->
                         SecurityContextHolder.clearContext())));
         http
-                .authenticationProvider(authenticationProvider);
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
