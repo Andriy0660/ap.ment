@@ -1,15 +1,17 @@
 package com.example.ap_ment.mapper;
 
 import com.example.ap_ment.dto.response.UserDTO;
+import com.example.ap_ment.entity.FriendRequest;
 import com.example.ap_ment.entity.User;
 import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class UserMapperTest {
-    UserMapper userMapper = new UserMapper();
+    private UserMapper userMapper = new UserMapper();
 
     @Test
     void shouldTransformUserToDTO(){
@@ -25,7 +27,7 @@ class UserMapperTest {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .build();
-        assertThat(userMapper.userToDTO(user)).isEqualTo(expected);
+        assertThat((UserDTO)userMapper.map(user)).isEqualTo(expected);
     }
     @Test
     void shouldTransformSetOfUsersToDTOs(){
@@ -62,9 +64,51 @@ class UserMapperTest {
         expected.add(dto1);
         expected.add(dto2);
 
-        assertThat(userMapper.setToDTOs(users)).isEqualTo(expected);
-
+        assertThat((Set<UserDTO>)userMapper.map(users)).isEqualTo(expected);
     }
 
+    @Test
+    void shouldReturnTrueWhenSupportsUser() {
+        assertThat(userMapper.supports(new User())).isTrue();
+    }
+    @Test
+    void shouldReturnTrueWhenSupportsSetOfUsers() {
+        Set<User> users = new HashSet<>();
+        users.add(new User());
+        users.add(new User());
+        assertThat(userMapper.supports(users)).isTrue();
+    }
 
+    @Test
+    void shouldReturnFalseWhenSupportsOtherType() {
+        assertThat(userMapper.supports(new FriendRequest())).isFalse();
+    }
+    @Test
+    void shouldReturnFalseWhenSupportsSetOfOtherType() {
+        HashSet<FriendRequest> set = new HashSet<>();
+        set.add(new FriendRequest());
+        assertThat(userMapper.supports(set))
+                .isFalse();
+    }
+
+    @Test
+    void shouldReturnUserDTOWhenGivenUser() {
+        User user = new User();
+        assertDoesNotThrow(()->userMapper.map(user));
+        assertThat((UserDTO)userMapper.map(user))
+                .isInstanceOf(UserDTO.class);
+    }
+    @Test
+    void shouldReturnSetOfUsersDTOWhenGivenSetOfUsers() {
+        Set<User> users = new HashSet<>();
+        users.add(new User());
+        users.add(new User());
+
+        assertDoesNotThrow(()->userMapper.map(users));
+        assertThat((Set<?>)userMapper.map(users))
+                .isInstanceOf(Set.class);
+
+        assertThat((((Set<?>) userMapper.map(users)).iterator().next()))
+                .isInstanceOf(UserDTO.class);
+    }
 }

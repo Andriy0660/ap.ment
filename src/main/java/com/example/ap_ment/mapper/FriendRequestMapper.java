@@ -9,13 +9,23 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class FriendRequestMapper {
+public class FriendRequestMapper implements IMapper{
     private final UserMapper userMapper;
-    public UserDTO friendRequestToUserDTO(FriendRequest friendRequest){
-        return userMapper.userToDTO(friendRequest.getSender());
+    public UserDTO mapRequest(FriendRequest friendRequest){
+        return userMapper.map(friendRequest.getSender());
     }
-    public Set<UserDTO> setToDTOs(Set<FriendRequest> requests){
-        return requests.stream().map(this::friendRequestToUserDTO)
+    public Set<UserDTO> mapRequest(Set<FriendRequest> requests){
+        return requests.stream().map(this::mapRequest)
                 .collect(Collectors.toSet());
     }
+
+    public <V, T> T map(V source) {
+        if(source instanceof FriendRequest) return (T)mapRequest((FriendRequest) source);
+        else return (T)mapRequest((Set<FriendRequest>) source);
+    }
+    public <V> boolean supports(V source){
+        return (source instanceof FriendRequest) ||
+                (source instanceof Set && ((Set<?>)source).iterator().next() instanceof FriendRequest);
+    }
+
 }

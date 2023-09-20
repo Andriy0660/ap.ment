@@ -6,7 +6,7 @@ import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.ConflictException;
 import com.example.ap_ment.exception.NotFoundException;
-import com.example.ap_ment.mapper.Mapper;
+import com.example.ap_ment.mapper.MapperManager;
 import com.example.ap_ment.repository.FriendRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.util.Set;
 public class FriendServiceImpl implements FriendService {
     private final FriendRequestRepository friendRequestRepository;
     private final UserServiceImpl userService;
-    private final Mapper mapper;
+    private final MapperManager mapperManager;
 
     public void save(FriendRequest friendRequest){
         friendRequestRepository.save(friendRequest);
@@ -62,10 +62,10 @@ public class FriendServiceImpl implements FriendService {
         userService.save(sender);
         userService.save(receiver);    }
     public Set<UserDTO> getAllFriendRequestsForUser(User user){
-        return mapper.map(user.getFriendRequests(), Set.class);
+        return mapperManager.map(user.getFriendRequests());
     }
     public Set<UserDTO> getAllFriendsForUser(User user){
-        return mapper.map(user.getFriends(),Set.class);
+        return mapperManager.map(user.getFriends());
     }
 
 }

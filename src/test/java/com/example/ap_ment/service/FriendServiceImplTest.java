@@ -6,7 +6,7 @@ import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.ConflictException;
 import com.example.ap_ment.exception.NotFoundException;
-import com.example.ap_ment.mapper.Mapper;
+import com.example.ap_ment.mapper.MapperManager;
 import com.example.ap_ment.repository.FriendRequestRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class FriendServiceImplTest {
     @Mock
     private UserServiceImpl userService;
     @Mock
-    private Mapper mapper;
+    private MapperManager mapperManager;
 
     private FriendRequest friendRequest;
     private User receiver;
@@ -158,7 +158,7 @@ class FriendServiceImplTest {
         Set<UserDTO> expected = new HashSet<>();
         expected.add(new UserDTO(sender.getEmail(), sender.getFirstName(), sender.getLastName()));
 
-        when(mapper.map(Mockito.anySet(), eq(Set.class))).thenReturn(expected);
+        when(mapperManager.map(Mockito.anySet())).thenReturn(expected);
 
         assertThat(friendService.getAllFriendRequestsForUser(receiver)).isEqualTo(expected);
     }
@@ -169,7 +169,7 @@ class FriendServiceImplTest {
         Set<UserDTO> expected = new HashSet<>();
         expected.add(new UserDTO(sender.getEmail(), sender.getFirstName(), sender.getLastName()));
 
-        when(mapper.map(Mockito.anySet(), eq(Set.class))).thenReturn(expected);
+        when(mapperManager.map(Mockito.anySet())).thenReturn(expected);
 
         assertThat(friendService.getAllFriendsForUser(receiver)).isEqualTo(expected);
     }

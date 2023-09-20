@@ -4,7 +4,7 @@ import com.example.ap_ment.dto.response.UserDTO;
 import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.NotFoundException;
-import com.example.ap_ment.mapper.Mapper;
+import com.example.ap_ment.mapper.MapperManager;
 import com.example.ap_ment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
-    private final Mapper mapper;
+    private final MapperManager mapperManager;
     public void save(User user) {
         repository.save(user);
     }
@@ -37,6 +37,6 @@ public class UserServiceImpl implements UserService {
         return userToDto(user);
     }
     public UserDTO userToDto(User user){
-        return mapper.map(user, UserDTO.class);
+        return mapperManager.map(user);
     }
 }

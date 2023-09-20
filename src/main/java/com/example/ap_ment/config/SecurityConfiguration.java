@@ -24,10 +24,6 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable);
 
-        //without jwt
-//        http.securityContext((context) -> context.requireExplicitSave(false))
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
-
         http
                 .authorizeHttpRequests(request -> request.requestMatchers(
                                 "/apment/v1/auth/signup", "/apment/v1/auth/signin"

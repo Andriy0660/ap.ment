@@ -5,7 +5,7 @@ import com.example.ap_ment.entity.User;
 import com.example.ap_ment.exception.BadRequestException;
 import com.example.ap_ment.exception.NotFoundException;
 import com.example.ap_ment.mapper.FriendRequestMapper;
-import com.example.ap_ment.mapper.Mapper;
+import com.example.ap_ment.mapper.MapperManager;
 import com.example.ap_ment.mapper.UserMapper;
 import com.example.ap_ment.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -17,6 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
@@ -27,11 +30,13 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     private UserServiceImpl userService;
 
-    private Mapper mapper = new Mapper(new UserMapper(), new FriendRequestMapper(new UserMapper()));
+    private MapperManager mapperManager = new MapperManager(List.of(
+            new UserMapper(), new FriendRequestMapper(new UserMapper())
+    ));
     private static User user;
 
     @BeforeEach
-    void setUp() {userService = new UserServiceImpl(userRepository,mapper);}
+    void setUp() {userService = new UserServiceImpl(userRepository, mapperManager);}
     @BeforeAll
     static void buildUser(){
         user = User.builder()
