@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Set;
 
 public interface FriendService {
-    ResponseEntity<Void> makeFriendRequest(Integer receiverId, User user);
+    ResponseEntity<Void> makeFriendRequest(User sender, Integer receiverId);
     ResponseEntity<Void> performFriendRequest(String status, Integer friendRequestId, User receiver);
     Set<UserDTO> getAllFriendRequestsForUser(User user);
     Set<UserDTO> getAllFriendsForUser(User user);

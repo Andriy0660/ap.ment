@@ -30,11 +30,14 @@ public class FriendServiceImpl implements FriendService {
         return friendRequestRepository.findById(id).orElseThrow(()->
                 new NotFoundException("There is no request with this id"));
     }
-    public ResponseEntity<Void> makeFriendRequest(Integer receiverId, User user){
-        if(user.getId().equals(receiverId))
+    public ResponseEntity<Void> makeFriendRequest(User sender, Integer receiverId){
+        if(sender.getId().equals(receiverId))
             throw new BadRequestException("You can not add yourself to your friends");
+        if(friendRequestRepository.existsBySenderIdAndReceiverId(sender.getId(), receiverId)){
+            throw new BadRequestException("You`ve already sent a friend request to this user");
+        }
         FriendRequest friendRequest = FriendRequest.builder()
-                .sender(user)
+                .sender(sender)
                 .receiverId(receiverId)
                 .build();
         save(friendRequest);

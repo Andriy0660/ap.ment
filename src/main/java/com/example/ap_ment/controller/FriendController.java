@@ -33,10 +33,10 @@ public class FriendController {
     }
 
     @PostMapping
-    public ResponseEntity<Void>makeRequest(@RequestParam("id")Integer friendId){
-        User user = (User) SecurityContextHolder.getContext().
+    public ResponseEntity<Void>makeRequest(@RequestParam("id")Integer receiverId){
+        User sender = (User) SecurityContextHolder.getContext().
                 getAuthentication().getPrincipal();
-        return friendService.makeFriendRequest(friendId,user);
+        return friendService.makeFriendRequest(sender,receiverId);
     }
 
     @PutMapping

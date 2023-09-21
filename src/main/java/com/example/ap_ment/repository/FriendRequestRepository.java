@@ -1,14 +1,13 @@
 package com.example.ap_ment.repository;
 
 import com.example.ap_ment.entity.FriendRequest;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+public interface FriendRequestRepository{
+    Optional<FriendRequest> findById(Integer id);
+    FriendRequest save(FriendRequest friendRequest);
+    int delete(FriendRequest friendRequest);
+    int deleteAll();
 
-@Repository
-public interface FriendRequestRepository extends JpaRepository<FriendRequest, Integer> {
-    @NotNull
-    Optional<FriendRequest> findById(@NotNull Integer id);
+    boolean existsBySenderIdAndReceiverId(Integer senderId, Integer receiverId);
 }

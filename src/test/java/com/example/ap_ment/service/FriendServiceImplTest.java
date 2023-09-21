@@ -25,6 +25,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -141,6 +142,20 @@ class FriendServiceImplTest {
                 .isInstanceOf(ConflictException.class)
                 .hasMessage("Error. You are not the receiver of this friend request");
     }
+    @Test
+    void shouldThrowWhenFriendRequestAlreadyExists() {
+        User user = User.builder().id(1).build();
+        when(friendRequestRepository.existsBySenderIdAndReceiverId(Mockito.any(),Mockito.any())).thenReturn(true);
+        assertThatThrownBy(()-> friendService.makeFriendRequest(user,2))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("You`ve already sent a friend request to this user");
+    }
+    @Test
+    void shouldNOTThrowWhenFriendRequestDOESNOTExists() {
+        User user = User.builder().id(1).build();
+        when(friendRequestRepository.existsBySenderIdAndReceiverId(Mockito.any(),Mockito.any())).thenReturn(false);
+        assertDoesNotThrow(()-> friendService.makeFriendRequest(user,2));
+    }
 
     @Test
     void shouldAddFriendAndSaveInDBForTwoUsers() {
@@ -177,7 +192,7 @@ class FriendServiceImplTest {
     @Test
     void shouldMakeFriendRequest() {
         Integer receiverId=1;
-        assertThat(friendService.makeFriendRequest(receiverId,sender))
+        assertThat(friendService.makeFriendRequest(sender,receiverId))
                 .isEqualTo(ResponseEntity.noContent().build());
         verify(friendService).save(friendRequest);
     }
@@ -185,7 +200,7 @@ class FriendServiceImplTest {
     @Test
     void shouldThrowWhenUserTryingToAddHimselfToFriends() {
         Integer idEqualsToTestedUser = 1;
-        assertThatThrownBy(()-> friendService.makeFriendRequest(idEqualsToTestedUser,receiver))
+        assertThatThrownBy(()-> friendService.makeFriendRequest(receiver,idEqualsToTestedUser))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("You can not add yourself to your friends");
         verify(friendService,never()).save(friendRequest);
